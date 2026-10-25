@@ -99,34 +99,6 @@ def main(
     nms_ksize: int = DEFAULT_NMS_KSIZE,
     circle_radius: int = 1,
 ) -> dict[str, Any]:
-    """Execute end-to-end Harris Corner Detector pipeline and save outputs.
-
-    Parameters
-    ----------
-    filename : str, default="data/building.jpg"
-        Path to input image file.
-    u : int, default=5
-        Horizontal shift for corner_score.
-    v : int, default=5
-        Vertical shift for corner_score.
-    window_size : tuple[int, int], default=(5, 5)
-        Summation window dimensions (height, width).
-    k : float, default=0.04
-        Harris sensitivity constant.
-    threshold : float, default=0.01
-        Corner threshold as fraction of maximum Harris response.
-    output_dir : str, default="outputs"
-        Target directory to save result files.
-    nms_ksize : int, default=3
-        Non-maximum suppression window size (3x3).
-    circle_radius : int, default=1
-        Radius in pixels of red dots marking corners (<=0 for 1-pixel dot).
-
-    Returns
-    -------
-    dict[str, Any]
-        Dictionary containing computed arrays and output file paths.
-    """
     file_path = Path(filename)
     if not file_path.is_file():
         raise FileNotFoundError(
@@ -159,7 +131,7 @@ def main(
         "Detected %d corners with threshold %.4f * max(R).", corner_count, threshold
     )
 
-    # 4. Create corners overlay — precise red dots on original color image.
+    # 4. Create corners overlay, precise red dots on original color image.
     # radius=1 with thickness=-1 produces a minimal 3x3 pixel dot (or exact 1-pixel
     # if radius <= 0) so the actual corner location remains clear and unobstructed.
     overlay_bgr = original_bgr.copy()

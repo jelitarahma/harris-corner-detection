@@ -1,5 +1,3 @@
-"""Spatial filtering and derivative operations for Harris Corner Detection."""
-
 from __future__ import annotations
 
 import cv2
@@ -9,18 +7,6 @@ import numpy as np
 def compute_sobel_derivatives(
     image: np.ndarray,
 ) -> tuple[np.ndarray, np.ndarray]:
-    """Compute spatial derivatives Ix and Iy using 3x3 Sobel operators.
-
-    Parameters
-    ----------
-    image : np.ndarray
-        2-D float64 grayscale image with shape (H, W).
-
-    Returns
-    -------
-    tuple[np.ndarray, np.ndarray]
-        Horizontal (Ix) and vertical (Iy) gradient images of shape (H, W).
-    """
     if image.ndim != 2:
         raise ValueError(
             f"image must be a 2-D grayscale array, got shape {image.shape}"
@@ -53,22 +39,6 @@ def box_sum(
     window_size: tuple[int, int],
     border_type: int = cv2.BORDER_REPLICATE,
 ) -> np.ndarray:
-    """Compute unnormalized sliding window summation over a 2-D array.
-
-    Parameters
-    ----------
-    arr : np.ndarray
-        2-D array of shape (H, W).
-    window_size : tuple[int, int]
-        (height, width) of the summation window. Must be positive odd integers.
-    border_type : int, default=cv2.BORDER_REPLICATE
-        OpenCV border extrapolation mode (e.g. cv2.BORDER_CONSTANT, cv2.BORDER_REPLICATE).
-
-    Returns
-    -------
-    np.ndarray
-        Summed 2-D array of shape (H, W), float64.
-    """
     if arr.ndim != 2:
         raise ValueError(f"arr must be a 2-D array, got shape {arr.shape}")
 
@@ -93,24 +63,6 @@ def box_sum(
 
 
 def shift_zero_pad(image: np.ndarray, u: int, v: int) -> np.ndarray:
-    """Shift a 2-D image so that at pixel (y, x), output holds I(y + v, x + u).
-
-    Pixels outside boundaries are zero-padded without toroidal wrapping.
-
-    Parameters
-    ----------
-    image : np.ndarray
-        2-D float64 array of shape (H, W).
-    u : int
-        Horizontal shift in columns.
-    v : int
-        Vertical shift in rows.
-
-    Returns
-    -------
-    np.ndarray
-        Shifted image of shape (H, W), with zero-padded boundaries.
-    """
     if image.ndim != 2:
         raise ValueError(f"image must be 2-D, got shape {image.shape}")
 

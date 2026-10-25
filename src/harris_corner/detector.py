@@ -42,36 +42,6 @@ def corner_score(
     v: int = DEFAULT_V,
     window_size: tuple[int, int] = DEFAULT_WINDOW_SIZE,
 ) -> np.ndarray:
-    """Calculate the exact SSD-based corner score map for all image pixels.
-
-    For each pixel (i, j), the corner response is defined as:
-        E(u, v) = sum_{(x,y) in W(i,j)} [I(x+u, y+v) - I(x, y)]^2
-
-    where W(i, j) is a window of size `window_size` centered at (i, j),
-    u is horizontal shift (columns), and v is vertical shift (rows).
-
-    Boundary Handling
-    -----------------
-    Per assignment specifications:
-    1. The shift I(x+u, y+v) uses explicit zero-padding (pixels outside image are 0).
-    2. The summation window uses zero-padding (cv2.BORDER_CONSTANT, value=0).
-
-    Parameters
-    ----------
-    image : np.ndarray
-        2-D array of shape (H, W).
-    u : int, default=5
-        Horizontal column shift.
-    v : int, default=5
-        Vertical row shift.
-    window_size : tuple[int, int], default=(5, 5)
-        (height, width) of the summation window; must be positive odd integers.
-
-    Returns
-    -------
-    np.ndarray
-        Corner score map of shape (H, W), dtype float64.
-    """
     _validate_image_and_window(image, window_size)
 
     img_f64 = image.astype(np.float64, copy=False)
@@ -95,31 +65,6 @@ def corner_score_taylor(
     y: int = DEFAULT_V,
     window_size: tuple[int, int] = DEFAULT_WINDOW_SIZE,
 ) -> np.ndarray:
-    """Calculate first-order Taylor approximation of the SSD corner score map.
-
-    Under the Taylor series expansion:
-        I(p + d) - I(p) ≈ d^T ∇I(p) = x * Ix(p) + y * Iy(p)
-
-    The squared difference integrand becomes:
-        [I(p + d) - I(p)]^2 ≈ (x * Ix + y * Iy)^2
-                            = x^2 * Ix^2 + 2 * x * y * Ix * Iy + y^2 * Iy^2
-
-    Parameters
-    ----------
-    image : np.ndarray
-        2-D array of shape (H, W).
-    x : int, default=5
-        Horizontal shift magnitude (column direction).
-    y : int, default=5
-        Vertical shift magnitude (row direction).
-    window_size : tuple[int, int], default=(5, 5)
-        (height, width) of summation window; must be positive odd integers.
-
-    Returns
-    -------
-    np.ndarray
-        Taylor-approximated corner score map of shape (H, W), dtype float64.
-    """
     _validate_image_and_window(image, window_size)
 
     img_f64 = image.astype(np.float64, copy=False)
@@ -145,33 +90,6 @@ def harris_detector(
     window_size: tuple[int, int] = DEFAULT_WINDOW_SIZE,
     k: float = DEFAULT_K,
 ) -> np.ndarray:
-    """Compute the Harris corner response map R for every image pixel.
-
-    Algorithm
-    ---------
-    1. Compute spatial gradients Ix, Iy using 3x3 Sobel filters.
-    2. Compute second moments: Ixx = Ix^2, Iyy = Iy^2, Ixy = Ix * Iy.
-    3. Construct structure tensor M of shape (H, W, 2, 2) using BORDER_REPLICATE
-       padding for window summation.
-    4. Compute scalar corner response:
-           R = det(M) - k * (trace(M))^2
-           det(M) = M[0,0] * M[1,1] - M[0,1]^2
-           trace(M) = M[0,0] + M[1,1]
-
-    Parameters
-    ----------
-    image : np.ndarray
-        2-D array of shape (H, W).
-    window_size : tuple[int, int], default=(5, 5)
-        (height, width) of summation window; must be positive odd integers.
-    k : float, default=0.04
-        Harris sensitivity constant. Typically 0.04 - 0.15 per Lecture Notes LN 07.
-
-    Returns
-    -------
-    np.ndarray
-        Harris response map R of shape (H, W), dtype float64.
-    """
     _validate_image_and_window(image, window_size)
 
     if k <= 0:
@@ -204,24 +122,6 @@ def detect_corners(
     threshold_ratio: float = DEFAULT_THRESHOLD_RATIO,
     nms_ksize: int = DEFAULT_NMS_KSIZE,
 ) -> np.ndarray:
-    """Detect corner coordinates using relative thresholding and NMS.
-
-    Parameters
-    ----------
-    response : np.ndarray
-        2-D float64 Harris response map of shape (H, W).
-    threshold_ratio : float, default=0.01
-        Corner threshold as a fraction of maximum response:
-        threshold = threshold_ratio * max(R) (per OpenCV tutorial standard).
-    nms_ksize : int, default=3
-        Kernel size for non-maximum suppression (e.g. 3 for 3x3 local maxima).
-        If <= 1, NMS is bypassed.
-
-    Returns
-    -------
-    np.ndarray
-        Array of shape (N, 2) containing (row, col) integer coordinates of detected corners.
-    """
     if response.ndim != 2:
         raise ValueError(f"response must be a 2-D array, got shape {response.shape}")
 
