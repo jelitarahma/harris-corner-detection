@@ -58,7 +58,7 @@ Semua hasil visualisasi dan array numerik akan otomatis disimpan di folder `outp
 ---
 
 ### 2. Deteksi pada Gambar Sendiri
-Tentukan path gambar yang ingin diproses:
+Jika ingin mencoba detaksi pada gambar lain (selain, gambar bawaan project). Silahkan tentukan path gambar yang ingin diproses:
 ```bash
 python -m harris_corner.main path/ke/gambar.jpg
 ```
@@ -100,25 +100,7 @@ python -m harris_corner.main --help
 
 ---
 
-### 4. Menjalankan via Script Python
-Modul ini juga bisa di-import langsung di script Python Anda:
-
-```python
-from harris_corner import main, harris_detector
-import cv2
-
-# Jalankan pipeline lengkap
-result = main("data/building.jpg")
-print("Total sudut terdeteksi:", result["corner_count"])
-
-# Atau hitung respons Harris secara terpisah
-gray = cv2.imread("data/building.jpg", cv2.IMREAD_GRAYSCALE)
-response = harris_detector(gray, window_size=(5, 5), k=0.04)
-```
-
----
-
-### 5. Menjalankan Unit Test
+### 4. Menjalankan Unit Test
 Untuk memastikan semua fungsi berjalan dengan benar:
 ```bash
 pytest -v
